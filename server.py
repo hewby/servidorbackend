@@ -26,18 +26,16 @@ def receber_pedido():
 def listar_pedidos():
     return jsonify({"pedidos": pedidos})
 
-# NOVAS rotas para limpeza:
-
 @app.route("/limpar_todos", methods=["POST"])
 def limpar_todos():
     global pedidos
-    pedidos = []  # apaga todos os pedidos
+    pedidos.clear()  # limpa a lista completamente
     return jsonify({"mensagem": "Todos os pedidos foram limpos."}), 200
 
 @app.route("/limpar_invalidos", methods=["POST"])
 def limpar_invalidos():
     global pedidos
-    pedidos = [p for p in pedidos if "link inválido" not in p]  # remove só inválidos
+    pedidos = [p for p in pedidos if "link inválido" not in p]
     return jsonify({"mensagem": "Pedidos inválidos foram limpos."}), 200
 
 if __name__ == "__main__":
