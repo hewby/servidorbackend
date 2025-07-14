@@ -25,3 +25,8 @@ def receber_pedido():
 @app.route("/pedidos", methods=["GET"])
 def listar_pedidos():
     return jsonify({"pedidos": pedidos})
+
+# ✅ ESTE BLOCO É ESSENCIAL PARA O RENDER FUNCIONAR
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
+
