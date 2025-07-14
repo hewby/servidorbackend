@@ -17,46 +17,34 @@ def receber_pedido():
     if not nome or not link:
         return jsonify({"mensagem": "Nome e link são obrigatórios."}), 400
 
-    agora = datetime.now().strftime("%H:%M:%S")
+    texto = f"{nome} te enviou uma música: {link}" if "youtube.com" in link or "youtu.be" in link \
+        else f"{nome} te enviou um link inválido"
 
-    if "youtube.com" in link or "youtu.be" in link:
-        texto = f"{nome} te enviou uma música: {link}"
-        valido = True
-    else:
-        texto = f"{nome} te enviou um link inválido"
-        valido = False
-
-    pedido = {
+    novo_pedido = {
         "id": str(uuid.uuid4()),
         "texto": texto,
-        "hora": agora,
-        "valido": valido,
-        "excluido": False
+        "hora": datetime.now().strftime("%H:%M:%S"),
+        "valido": "youtube.com" in link or "youtu.be" in link
     }
-    pedidos.append(pedido)
 
+    pedidos.append(novo_pedido)
     return jsonify({"mensagem": "Pedido recebido com sucesso."}), 200
 
 @app.route("/pedidos", methods=["GET"])
 def listar_pedidos():
-    pedidos_visiveis = [p for p in pedidos if not p["excluido"]]
-    return jsonify({"pedidos": pedidos_visiveis})
+    return jsonify({"pedidos": pedidos})
 
 @app.route("/limpar_todos", methods=["POST"])
 def limpar_todos():
-    for pedido in pedidos:
-        pedido["excluido"] = True
-    return jsonify({"mensagem": "Todos os pedidos foram marcados como excluídos."})
+    pedidos.clear()
+    return jsonify({"mensagem": "Todos os pedidos foram apagados."}), 200
 
 @app.route("/limpar_invalidos", methods=["POST"])
 def limpar_invalidos():
-    for pedido in pedidos:
-        if not pedido["valido"]:
-            pedido["excluido"] = True
-    return jsonify({"mensagem": "Pedidos inválidos excluídos."})
+    global pedidos
+    pedidos = [p for p in pedidos if p["valido"]]
+    return jsonify({"mensagem": "Pedidos inválidos removidos."}), 200
 
 if __name__ == "__main__":
-    app.run(debug=True)
-
-
+    app.run(host="0.0.0.0", port=10000)
 
