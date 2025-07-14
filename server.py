@@ -18,16 +18,17 @@ def receber_pedido():
         return jsonify({"mensagem": "Nome e link são obrigatórios."}), 400
 
     valido = "youtube.com" in link or "youtu.be" in link
-    texto = f"{nome} te enviou uma música: {link}" if valido else f"{nome} te enviou um link inválido"
     horario = datetime.now().strftime("%H:%M:%S")
     pedido = {
         "id": str(uuid.uuid4()),
-        "texto": texto,
+        "nome": nome,
         "link": link if valido else None,
         "valido": valido,
         "horario": horario
     }
+
     pedidos.append(pedido)
+
     return jsonify({"mensagem": "Pedido recebido com sucesso."}), 200
 
 @app.route("/pedidos", methods=["GET"])
@@ -47,3 +48,4 @@ def limpar_invalidos():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
+
