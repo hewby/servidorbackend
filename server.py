@@ -38,5 +38,5 @@ def limpar_invalidos():
     pedidos = [p for p in pedidos if "link inválido" not in p]
     return jsonify({"mensagem": "Pedidos inválidos foram removidos."}), 200
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     #app.run(host="0.0.0.0", port=10000)
