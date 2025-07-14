@@ -18,7 +18,7 @@ def receber_pedido():
     if "youtube.com" in link or "youtu.be" in link:
         pedidos.append(f"{nome} te enviou uma música: {link}")
     else:
-        pedidos.append(f"{nome} te enviou um link inválido")
+        pedidos.append(f"{nome} te enviou um link inválido: {link}")
 
     return jsonify({"mensagem": "Pedido recebido com sucesso."}), 200
 
