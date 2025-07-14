@@ -18,17 +18,16 @@ def receber_pedido():
         return jsonify({"mensagem": "Nome e link são obrigatórios."}), 400
 
     valido = "youtube.com" in link or "youtu.be" in link
-    horario = datetime.now().strftime("%H:%M:%S")
+
     pedido = {
         "id": str(uuid.uuid4()),
         "nome": nome,
-        "link": link if valido else None,
+        "link": link,
         "valido": valido,
-        "horario": horario
+        "horario": datetime.now().strftime("%H:%M:%S")
     }
 
     pedidos.append(pedido)
-
     return jsonify({"mensagem": "Pedido recebido com sucesso."}), 200
 
 @app.route("/pedidos", methods=["GET"])
@@ -38,14 +37,14 @@ def listar_pedidos():
 @app.route("/limpar_todos", methods=["POST"])
 def limpar_todos():
     pedidos.clear()
-    return jsonify({"mensagem": "Todos os pedidos foram removidos."}), 200
+    return jsonify({"mensagem": "Todos os pedidos foram removidos."})
 
 @app.route("/limpar_invalidos", methods=["POST"])
 def limpar_invalidos():
     global pedidos
     pedidos = [p for p in pedidos if p["valido"]]
-    return jsonify({"mensagem": "Pedidos inválidos removidos."}), 200
+    return jsonify({"mensagem": "Pedidos inválidos foram removidos."})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    app.run(debug=True)
 
