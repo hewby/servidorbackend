@@ -1,7 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from datetime import datetime
-import uuid
 
 app = Flask(__name__)
 CORS(app)
@@ -17,34 +15,30 @@ def receber_pedido():
     if not nome or not link:
         return jsonify({"mensagem": "Nome e link são obrigatórios."}), 400
 
-    texto = f"{nome} te enviou uma música: {link}" if "youtube.com" in link or "youtu.be" in link \
-        else f"{nome} te enviou um link inválido"
+    if "youtube.com" in link or "youtu.be" in link:
+        pedidos.append(f"{nome} te enviou uma música: {link}")
+    else:
+        pedidos.append(f"{nome} te enviou um link inválido")
 
-    novo_pedido = {
-        "id": str(uuid.uuid4()),
-        "texto": texto,
-        "hora": datetime.now().strftime("%H:%M:%S"),
-        "valido": "youtube.com" in link or "youtu.be" in link
-    }
-
-    pedidos.append(novo_pedido)
     return jsonify({"mensagem": "Pedido recebido com sucesso."}), 200
 
 @app.route("/pedidos", methods=["GET"])
 def listar_pedidos():
     return jsonify({"pedidos": pedidos})
 
+# NOVAS rotas para limpeza:
+
 @app.route("/limpar_todos", methods=["POST"])
 def limpar_todos():
-    pedidos.clear()
-    return jsonify({"mensagem": "Todos os pedidos foram apagados."}), 200
+    global pedidos
+    pedidos = []  # apaga todos os pedidos
+    return jsonify({"mensagem": "Todos os pedidos foram limpos."}), 200
 
 @app.route("/limpar_invalidos", methods=["POST"])
 def limpar_invalidos():
     global pedidos
-    pedidos = [p for p in pedidos if p["valido"]]
-    return jsonify({"mensagem": "Pedidos inválidos removidos."}), 200
+    pedidos = [p for p in pedidos if "link inválido" not in p]  # remove só inválidos
+    return jsonify({"mensagem": "Pedidos inválidos foram limpos."}), 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
-
